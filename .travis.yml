@@ -1,0 +1,6 @@
+language: objective-c
+osx_image: xcode10.0
+sudo: false
+script:
+- xcodebuild clean -project YSSegmentContainer.xcodeproj -scheme YSSegmentContainer -configuration Debug -sdk iphoneos
+- xcodebuild -project YSSegmentContainer.xcodeproj -scheme YSSegmentContainer -sdk iphonesimulator ONLY_ACTIVE_ARCH=NO
