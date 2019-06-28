@@ -9,6 +9,7 @@
 #import "DemoViewController.h"
 #import "YSSegmentContainerViewController.h"
 #import "YSMenuItemWrapperView.h"
+#import "YSMenuItemSliderView.h"
 #import "YSSegmentContainerViewControllerDelegate.h"
 #import "ListViewController.h"
 #import "TempViewController.h"
@@ -29,7 +30,8 @@
     self.view.backgroundColor = [UIColor whiteColor];
     
     [self customNav];
-    [self customView];
+//    [self customViewWrapper];
+    [self customViewSlider];
 }
 
 - (void)viewDidLayoutSubviews {
@@ -53,7 +55,7 @@
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Push" style:UIBarButtonItemStyleDone target:self action:@selector(pushTempViewController)];
 }
 
-- (void)customView {
+- (void)customViewWrapper {
     
     self.segmentContainerVC = [[YSSegmentContainerViewController alloc] init];
     
@@ -89,6 +91,60 @@
     self.segmentContainerVC.incidentDelegate = self;
 //    self.segmentContainerVC.isAllowPanInteractive = false;
 //    self.segmentContainerVC.interativePanPercent = 0.4;
+    
+    /*
+     Then, set manage subviewcontroller
+     */
+    self.segmentContainerVC.viewControllers = [vcList copy];
+    
+    /*
+     Then, add to show
+     */
+    [self addChildViewController:self.segmentContainerVC];
+    [self.segmentContainerVC didMoveToParentViewController:self];
+    [self.view addSubview:self.segmentContainerVC.view];
+    
+    /*
+     finally, set show index; if not set, default 0.
+     */
+    [self.segmentContainerVC setShowIndex:1];
+}
+
+- (void)customViewSlider {
+    
+    self.segmentContainerVC = [[YSSegmentContainerViewController alloc] init];
+    
+    /*
+     First, deploy menuView,delegate,containerVC...
+     */
+    self.delegate = [[YSSegmentContainerViewControllerDefaultDelegate alloc] init];
+    self.segmentContainerVC.delegate = self.delegate;
+    
+    YSMenuItemSliderView *menuView = [[YSMenuItemSliderView alloc] initWithFrame:CGRectMake(0.0, 0.0, [UIScreen mainScreen].bounds.size.width, 44.0)];
+    //    menuView.separateLineHeight = 2.0;
+    //    menuView.separateLineColor = [UIColor redColor];
+    //    menuView.itemWrapperHeightSpace = 8.0;
+    menuView.itemWrapperWidthSpace = 30.0;
+    self.segmentContainerVC.menuView = menuView;
+    
+//    NSArray *titleList = @[@"推荐", @"热门", @"体育", @"财经", @"社会", @"科技", @"幽默", @"军事", @"服装", @"教育"];
+    
+    // less than screen width scene
+        NSArray *titleList = @[@"推荐", @"热门", @"体育"];
+        menuView.sliderFitItemWidth = true;
+        menuView.itemWrapperWidthSpace = 40.0;
+        menuView.isEqualItem = true;
+    
+    NSMutableArray *vcList = [NSMutableArray array];
+    for (int i = 0; i < titleList.count; i++) {
+        NSString *title = titleList[i];
+        ListViewController *tempVC = [[ListViewController alloc] init];
+        tempVC.title = title;
+        [vcList addObject:tempVC];
+    }
+    self.segmentContainerVC.incidentDelegate = self;
+    //    self.segmentContainerVC.isAllowPanInteractive = false;
+    //    self.segmentContainerVC.interativePanPercent = 0.4;
     
     /*
      Then, set manage subviewcontroller

@@ -31,7 +31,7 @@
 @property (nonatomic, strong) UIColor *selectBGColor;
 /*
  whether selectBG view fit item width, default true.
- true: fit item Width, false: fit item's text width
+ true: fit item Width, false: fit item's text width(textWidth+itemWrapperWidthSpace)
  */
 @property (nonatomic, assign) BOOL selectBGFitItemWidth;
 // default 16.0
