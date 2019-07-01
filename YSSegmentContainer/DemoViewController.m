@@ -30,8 +30,7 @@
     self.view.backgroundColor = [UIColor whiteColor];
     
     [self customNav];
-//    [self customViewWrapper];
-    [self customViewSlider];
+    [self customView];
 }
 
 - (void)viewDidLayoutSubviews {
@@ -55,47 +54,30 @@
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Push" style:UIBarButtonItemStyleDone target:self action:@selector(pushTempViewController)];
 }
 
-- (void)customViewWrapper {
+- (void)customView {
     
     self.segmentContainerVC = [[YSSegmentContainerViewController alloc] init];
-    
-     /*
-      First, deploy menuView,delegate,containerVC...
-      */
+    /*
+     First, deploy menuView,delegate,containerVC...
+     */
     self.delegate = [[YSSegmentContainerViewControllerDefaultDelegate alloc] init];
     self.segmentContainerVC.delegate = self.delegate;
-    
-    YSMenuItemWrapperView *menuView = [[YSMenuItemWrapperView alloc] initWithFrame:CGRectMake(0.0, 0.0, [UIScreen mainScreen].bounds.size.width, 44.0)];
-//    menuView.separateLineHeight = 2.0;
-//    menuView.separateLineColor = [UIColor redColor];
-//    menuView.selectBGColor = [UIColor blueColor];
-//    menuView.itemWrapperHeightSpace = 8.0;
-    menuView.itemWrapperWidthSpace = 30.0;
-    self.segmentContainerVC.menuView = menuView;
-    
-    NSArray *titleList = @[@"推荐", @"热门", @"体育", @"财经", @"社会", @"科技", @"幽默", @"军事", @"服装", @"教育"];
-    
-    // less than screen width scene
-//    NSArray *titleList = @[@"推荐", @"热门", @"体育"];
-//    menuView.selectBGFitItemWidth = false;
-//    menuView.itemWrapperWidthSpace = 40.0;
-//    menuView.isEqualItem = true;
-    
-    NSMutableArray *vcList = [NSMutableArray array];
-    for (int i = 0; i < titleList.count; i++) {
-        NSString *title = titleList[i];
-        ListViewController *tempVC = [[ListViewController alloc] init];
-        tempVC.title = title;
-        [vcList addObject:tempVC];
-    }
     self.segmentContainerVC.incidentDelegate = self;
-//    self.segmentContainerVC.isAllowPanInteractive = false;
-//    self.segmentContainerVC.interativePanPercent = 0.4;
     
     /*
      Then, set manage subviewcontroller
      */
-    self.segmentContainerVC.viewControllers = [vcList copy];
+    if ([self.type isEqualToString:@"wrapper"]) {
+        [self customWrapper];
+    } else if ([self.type isEqualToString:@"equal wrapper"]) {
+        [self customEqualWrapper];
+    } else if ([self.type isEqualToString:@"slider"]) {
+        [self customSlider];
+    } else if ([self.type isEqualToString:@"equal slider"]) {
+        [self customEqualSlider];
+    } else {
+        //...
+    }
     
     /*
      Then, add to show
@@ -110,31 +92,17 @@
     [self.segmentContainerVC setShowIndex:1];
 }
 
-- (void)customViewSlider {
+- (void)customWrapper {
     
-    self.segmentContainerVC = [[YSSegmentContainerViewController alloc] init];
-    
-    /*
-     First, deploy menuView,delegate,containerVC...
-     */
-    self.delegate = [[YSSegmentContainerViewControllerDefaultDelegate alloc] init];
-    self.segmentContainerVC.delegate = self.delegate;
-    
-    YSMenuItemSliderView *menuView = [[YSMenuItemSliderView alloc] initWithFrame:CGRectMake(0.0, 0.0, [UIScreen mainScreen].bounds.size.width, 44.0)];
-    //    menuView.separateLineHeight = 2.0;
-    //    menuView.separateLineColor = [UIColor redColor];
-    //    menuView.itemWrapperHeightSpace = 8.0;
+    YSMenuItemWrapperView *menuView = [[YSMenuItemWrapperView alloc] initWithFrame:CGRectMake(0.0, 0.0, [UIScreen mainScreen].bounds.size.width, 44.0)];
+//    menuView.separateLineHeight = 2.0;
+//    menuView.separateLineColor = [UIColor redColor];
+//    menuView.selectBGColor = [UIColor blueColor];
+//    menuView.itemWrapperHeightSpace = 8.0;
     menuView.itemWrapperWidthSpace = 30.0;
     self.segmentContainerVC.menuView = menuView;
     
-//    NSArray *titleList = @[@"推荐", @"热门", @"体育", @"财经", @"社会", @"科技", @"幽默", @"军事", @"服装", @"教育"];
-    
-    // less than screen width scene
-        NSArray *titleList = @[@"推荐", @"热门", @"体育"];
-        menuView.sliderFitItemWidth = true;
-        menuView.itemWrapperWidthSpace = 40.0;
-        menuView.isEqualItem = true;
-    
+    NSArray *titleList = @[@"推荐", @"热门", @"体育", @"财经", @"社会", @"科技", @"幽默", @"军事", @"服装", @"教育"];
     NSMutableArray *vcList = [NSMutableArray array];
     for (int i = 0; i < titleList.count; i++) {
         NSString *title = titleList[i];
@@ -142,26 +110,68 @@
         tempVC.title = title;
         [vcList addObject:tempVC];
     }
-    self.segmentContainerVC.incidentDelegate = self;
-    //    self.segmentContainerVC.isAllowPanInteractive = false;
-    //    self.segmentContainerVC.interativePanPercent = 0.4;
-    
-    /*
-     Then, set manage subviewcontroller
-     */
     self.segmentContainerVC.viewControllers = [vcList copy];
+}
+
+- (void)customEqualWrapper {
     
-    /*
-     Then, add to show
-     */
-    [self addChildViewController:self.segmentContainerVC];
-    [self.segmentContainerVC didMoveToParentViewController:self];
-    [self.view addSubview:self.segmentContainerVC.view];
+    YSMenuItemWrapperView *menuView = [[YSMenuItemWrapperView alloc] initWithFrame:CGRectMake(0.0, 0.0, [UIScreen mainScreen].bounds.size.width, 44.0)];
+    menuView.itemWrapperWidthSpace = 40.0;
+    // wrapperView是否跟随item大小
+    menuView.selectBGFitItemWidth = false;
+    // 是否平分整屏
+    menuView.isEqualItem = true;
+    self.segmentContainerVC.menuView = menuView;
+    NSArray *titleList = @[@"推荐", @"个人收藏", @"热门"];
+    NSMutableArray *vcList = [NSMutableArray array];
+    for (int i = 0; i < titleList.count; i++) {
+        NSString *title = titleList[i];
+        ListViewController *tempVC = [[ListViewController alloc] init];
+        tempVC.title = title;
+        [vcList addObject:tempVC];
+    }
+    self.segmentContainerVC.viewControllers = [vcList copy];
+}
+
+
+- (void)customSlider {
     
-    /*
-     finally, set show index; if not set, default 0.
-     */
-    [self.segmentContainerVC setShowIndex:1];
+    YSMenuItemSliderView *menuView = [[YSMenuItemSliderView alloc] initWithFrame:CGRectMake(0.0, 0.0, [UIScreen mainScreen].bounds.size.width, 44.0)];
+//    menuView.separateLineHeight = 2.0;
+//    menuView.separateLineColor = [UIColor redColor];
+//    menuView.itemWrapperHeightSpace = 8.0;
+    menuView.itemWrapperWidthSpace = 30.0;
+    self.segmentContainerVC.menuView = menuView;
+    
+    NSArray *titleList = @[@"推荐", @"热门", @"体育", @"财经", @"社会", @"科技", @"幽默", @"军事", @"服装", @"教育"];
+    NSMutableArray *vcList = [NSMutableArray array];
+    for (int i = 0; i < titleList.count; i++) {
+        NSString *title = titleList[i];
+        ListViewController *tempVC = [[ListViewController alloc] init];
+        tempVC.title = title;
+        [vcList addObject:tempVC];
+    }
+    self.segmentContainerVC.viewControllers = [vcList copy];
+}
+
+- (void)customEqualSlider {
+    
+    YSMenuItemSliderView *menuView = [[YSMenuItemSliderView alloc] initWithFrame:CGRectMake(0.0, 0.0, [UIScreen mainScreen].bounds.size.width, 44.0)];
+    menuView.itemWrapperWidthSpace = 40.0;
+    menuView.sliderFitItemWidth = false;
+    menuView.isEqualItem = true;
+    menuView.selectFontScale = 1.1;
+    self.segmentContainerVC.menuView = menuView;
+    
+    NSArray *titleList = @[@"推荐", @"个人收藏", @"热门"];
+    NSMutableArray *vcList = [NSMutableArray array];
+    for (int i = 0; i < titleList.count; i++) {
+        NSString *title = titleList[i];
+        ListViewController *tempVC = [[ListViewController alloc] init];
+        tempVC.title = title;
+        [vcList addObject:tempVC];
+    }
+    self.segmentContainerVC.viewControllers = [vcList copy];
 }
 
 #pragma mark - YSSegmentContainerViewControllerIncidentDelegate

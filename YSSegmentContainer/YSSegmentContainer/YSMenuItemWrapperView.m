@@ -75,11 +75,13 @@
     UILabel *fromView = [self.selectItemsView.subviews objectAtIndex:fromIndex];
     UILabel *toView = [self.selectItemsView.subviews objectAtIndex:toIndex];
     
-    CGFloat offsetX = (toView.frame.origin.x - fromView.frame.origin.x) * progress;
-    CGFloat offswtWidth = (toView.bounds.size.width - fromView.bounds.size.width) * progress;
+    CGRect fromRect = [self getFitItemFrame:fromView];
+    CGRect toRect = [self getFitItemFrame:toView];
     
-    CGRect fitItemFrame = [self getFitItemFrame:fromView];
-    self.maskView.frame = CGRectMake(fitItemFrame.origin.x + offsetX, toView.frame.origin.y, fitItemFrame.size.width + offswtWidth, toView.bounds.size.height);
+    CGFloat offsetX = (toRect.origin.x - fromRect.origin.x) * progress;
+    CGFloat offswtWidth = (toRect.size.width - fromRect.size.width) * progress;
+    
+    self.maskView.frame = CGRectMake(fromRect.origin.x + offsetX, toRect.origin.y, fromRect.size.width + offswtWidth, toRect.size.height);
     
     if (progress >= 1.0) {
         self.selectIndex = toIndex;
@@ -149,6 +151,7 @@
         
         UILabel *itemLabel = [self createItemLabelWithTitle:title];
         itemLabel.textColor = self.normalColor;
+        itemLabel.font = self.itemFont;
         itemLabel.userInteractionEnabled = true;
         [itemLabel addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapItem:)]];
         [self.itemsView addSubview:itemLabel];
@@ -156,6 +159,7 @@
         
         UILabel *selectLabel = [self createItemLabelWithTitle:title];
         selectLabel.textColor = self.selectColor;
+        selectLabel.font = self.itemFont;
         selectLabel.userInteractionEnabled = false;
         [self.selectItemsView addSubview:selectLabel];
         selectLabel.frame = frame;

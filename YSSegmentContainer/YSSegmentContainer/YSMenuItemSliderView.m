@@ -74,10 +74,12 @@
     UILabel *fromView = [self itemViewOfItemsViewByIndex:fromIndex];
     UILabel *toView = [self itemViewOfItemsViewByIndex:toIndex];
     
-    CGFloat offsetX = (toView.frame.origin.x - fromView.frame.origin.x) * progress;
-    CGFloat offswtWidth = (toView.bounds.size.width - fromView.bounds.size.width) * progress;
-    
     CGRect fitItemFrame = [self getFitItemFrame:fromView];
+    CGRect toViewOriginalFrame = [self getFitItemFrame:toView];
+    
+    CGFloat offsetX = (toViewOriginalFrame.origin.x - fitItemFrame.origin.x) * progress;
+    CGFloat offswtWidth = (toViewOriginalFrame.size.width - fitItemFrame.size.width) * progress;
+    
     CGRect frame = self.slider.frame;
     frame.origin.x = fitItemFrame.origin.x + offsetX;
     frame.size.width = fitItemFrame.size.width + offswtWidth;
@@ -94,7 +96,7 @@
         fromView.textColor = self.selectColor;
         toView.textColor = self.normalColor;
     }
-    
+    NSLog(@"progress: %f, %@", progress, NSStringFromCGRect(self.slider.frame));
     if (progress >= 1.0) {
         self.selectIndex = toIndex;
     }
@@ -161,6 +163,7 @@
         
         UILabel *itemLabel = [self createItemLabelWithTitle:title];
         itemLabel.textColor = self.normalColor;
+        itemLabel.font = self.itemFont;
         itemLabel.userInteractionEnabled = true;
         [itemLabel addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapItem:)]];
         [self.itemsView addSubview:itemLabel];
@@ -195,6 +198,7 @@
     [UIView animateWithDuration:0.25 animations:^{
         CGRect itemFitFrame = [self getFitItemFrame:toView];
         self.slider.frame = CGRectMake(itemFitFrame.origin.x, self.slider.frame.origin.y, itemFitFrame.size.width, self.sliderHeight);
+        NSLog(@"anim: %@", NSStringFromCGRect(self.slider.frame));
         fromView.transform = CGAffineTransformIdentity;
         fromView.textColor = self.normalColor;
         toView.transform = CGAffineTransformMakeScale(self.selectFontScale, self.selectFontScale);
@@ -243,8 +247,16 @@
 
 - (CGRect)getFitItemFrame:(UIView *)itemView {
     
+    // 获取transform前的坐标
+    CGRect frame = itemView.frame;
+    if (itemView.transform.a > 0.0 || itemView.transform.d > 0.0) {
+        CGFloat width = frame.size.width / itemView.transform.a;
+        CGFloat originX = frame.origin.x + (frame.size.width - width) * 0.5;
+        frame.origin.x = originX;
+        frame.size.width = width;
+    }
     if (self.sliderFitItemWidth) {
-        return itemView.frame;
+        return frame;
     } else {
         NSInteger index = [self itemIndexOfItemsView:itemView];
         if (index == NSNotFound) {
@@ -252,15 +264,9 @@
         }
         CGSize textSize = [self.itemsSizeList[index] CGSizeValue];
         CGSize fitSize = CGSizeMake(textSize.width + self.itemWrapperWidthSpace , self.itemSizeMaxHeight + self.itemWrapperHeightSpace);
-        CGFloat offsetW = itemView.bounds.size.width - fitSize.width;
-        return CGRectMake(itemView.frame.origin.x + offsetW * 0.5, itemView.frame.origin.y, fitSize.width, fitSize.height);
+        CGFloat offsetW = frame.size.width - fitSize.width;
+        return CGRectMake(frame.origin.x + offsetW * 0.5, frame.origin.y, fitSize.width, fitSize.height);
     }
-}
-
-- (CGRect)getItemViewOriginalFrame:(UILabel *)label {
-    
-    CGRect rect;
-    return rect;
 }
 
 - (NSInteger)itemIndexOfItemsView:(UIView *)itemView {

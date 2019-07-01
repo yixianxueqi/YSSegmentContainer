@@ -152,7 +152,6 @@
     if (transistion && [transistion respondsToSelector:@selector(containerViewControllerTransitionInContainerViewController:animator:)]) {
         intercative = [transistion containerViewControllerTransitionInContainerViewController:self animator:nil];
     }
-
     switch (pan.state) {
         case UIGestureRecognizerStateBegan:{
             self.interactive = true;
