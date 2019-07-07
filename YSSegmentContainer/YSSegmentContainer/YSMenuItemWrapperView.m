@@ -88,6 +88,11 @@
     }
 }
 
+- (void)reverseChooseIndex {
+    
+    [self setFromIndex:self.selectIndex toIndex:self.selectIndex];
+}
+
 #pragma mark - incident
 - (void)tapItem:(UITapGestureRecognizer *)tap {
     

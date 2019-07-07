@@ -18,6 +18,7 @@
 
 - (void)setItemsTitle:(NSArray<NSString *> *)items;
 - (void)chooseIndex:(NSInteger)index;
+- (void)reverseChooseIndex;
 - (void)setFromIndex:(NSInteger)fromIndex toIndex:(NSInteger)toIndex progress:(CGFloat)progress;
 
 @end

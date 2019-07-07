@@ -96,11 +96,15 @@
         fromView.textColor = self.selectColor;
         toView.textColor = self.normalColor;
     }
-    NSLog(@"progress: %f, %@", progress, NSStringFromCGRect(self.slider.frame));
     if (progress >= 1.0) {
         self.selectIndex = toIndex;
     }
 }
+
+- (void)reverseChooseIndex {
+    [self setFromIndex:self.selectIndex toIndex:self.selectIndex];
+}
+
 #pragma mark - incident
 - (void)tapItem:(UITapGestureRecognizer *)tap {
     
@@ -198,7 +202,6 @@
     [UIView animateWithDuration:0.25 animations:^{
         CGRect itemFitFrame = [self getFitItemFrame:toView];
         self.slider.frame = CGRectMake(itemFitFrame.origin.x, self.slider.frame.origin.y, itemFitFrame.size.width, self.sliderHeight);
-        NSLog(@"anim: %@", NSStringFromCGRect(self.slider.frame));
         fromView.transform = CGAffineTransformIdentity;
         fromView.textColor = self.normalColor;
         toView.transform = CGAffineTransformMakeScale(self.selectFontScale, self.selectFontScale);

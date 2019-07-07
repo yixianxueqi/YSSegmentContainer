@@ -10,14 +10,12 @@
 #import "YSSegmentContainerViewController.h"
 #import "YSMenuItemWrapperView.h"
 #import "YSMenuItemSliderView.h"
-#import "YSSegmentContainerViewControllerDelegate.h"
 #import "ListViewController.h"
 #import "TempViewController.h"
 
 @interface DemoViewController ()<YSSegmentContainerViewControllerIncidentDelegate>
 
 @property (nonatomic, strong) YSSegmentContainerViewController *segmentContainerVC;
-@property (nonatomic, strong) YSSegmentContainerViewControllerDefaultDelegate *delegate;
 
 @end
 
@@ -60,8 +58,6 @@
     /*
      First, deploy menuView,delegate,containerVC...
      */
-    self.delegate = [[YSSegmentContainerViewControllerDefaultDelegate alloc] init];
-    self.segmentContainerVC.delegate = self.delegate;
     self.segmentContainerVC.incidentDelegate = self;
     
     /*
@@ -69,6 +65,7 @@
      */
     if ([self.type isEqualToString:@"wrapper"]) {
         [self customWrapper];
+//        self.segmentContainerVC.isAllowPanInteractive = false;
     } else if ([self.type isEqualToString:@"equal wrapper"]) {
         [self customEqualWrapper];
     } else if ([self.type isEqualToString:@"slider"]) {

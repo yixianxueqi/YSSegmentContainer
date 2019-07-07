@@ -14,7 +14,11 @@
     
 }
 
-- (void)setSelectIndex:(NSInteger)index {
+- (void)chooseIndex:(NSInteger)index {
+    
+}
+
+- (void)reverseChooseIndex {
     
 }
 
