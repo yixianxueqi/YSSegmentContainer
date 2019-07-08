@@ -6,7 +6,7 @@ It's a container, appearance looks like news app Layout. Simple And Convenienceï
 
 ## Appearance
 
-<img src="./resource/video/record.flv" width="272" style="display: inline-block;float: center;"> 
+<img src="./resource/gif/record_opt.gif" width="320" style="display: inline-block;float: center;"> 
 
 
 ## Usage
