@@ -6,13 +6,7 @@ It's a container, appearance looks like news app Layout. Simple And Convenienceï
 
 ## Appearance
 
-##### JPG
-
-<center class="half">
-<img src="./resource/jpg/001.jpeg" width="200"/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src="./resource/jpg/002.jpeg" width="200"/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src="./resource/jpg/003.jpeg" width="200"/></center>
-
-##### Gif
-<img src="./resource/gif/record_opt.gif" width="272" height="480" style="display: inline-block;float: center;"> 
+<img src="./resource/video/record.mp4" width="272" style="display: inline-block;float: center;"> 
 
 
 ## Usage
