@@ -24,7 +24,7 @@ typedef NS_ENUM(NSInteger, YSDirectionType) {
 @property (nonatomic, strong) UIView *containerView;
 
 @property (nonatomic, strong) UIPanGestureRecognizer *pan;
-@property (nonatomic, assign) CGRect originBounds;
+@property (nonatomic, assign) CGPoint originXY;
 @property (nonatomic, assign) BOOL needSelectAnimate;
 @property (nonatomic, assign) BOOL isPanProcessing;
 @property (nonatomic, assign) NSInteger preSelectIndex;
@@ -40,6 +40,7 @@ typedef NS_ENUM(NSInteger, YSDirectionType) {
         _selectIndex = NSNotFound;
         _preSelectIndex = NSNotFound;
         _isAllowPanInteractive = true;
+        _widthThreshold = 0.5;
         _needSelectAnimate = true;
     }
     return self;
@@ -117,7 +118,7 @@ typedef NS_ENUM(NSInteger, YSDirectionType) {
         [self addChildViewController:vc];
         [vc didMoveToParentViewController:self];
     }
-    self.originBounds = self.containerView.bounds;
+    self.originXY = self.containerView.bounds.origin;
 }
 
 - (void)initializeShow {
@@ -130,12 +131,15 @@ typedef NS_ENUM(NSInteger, YSDirectionType) {
 
 - (void)selectShowFromIndex:(NSInteger)fromIndex toIndex:(NSInteger)toIndex {
     
+    [self willChanageIndexFrom:fromIndex toIndex:toIndex];
+    
     if (fromIndex == NSNotFound) {
         UIViewController *toVC = [self.viewControllers objectAtIndex:toIndex];
         [self addChildViewController:toVC];
         [self.containerView addSubview:toVC.view];
         toVC.view.frame = self.containerView.bounds;
         [toVC didMoveToParentViewController:self];
+        [self didChanageIndexFrom:fromIndex toIndex:toIndex isCancel:false];
     } else {
         UIViewController *fromVC = [self.viewControllers objectAtIndex:fromIndex];
         UIViewController *toVC = [self.viewControllers objectAtIndex:toIndex];
@@ -150,7 +154,22 @@ typedef NS_ENUM(NSInteger, YSDirectionType) {
         } completion:^(BOOL finished) {
             fromVC.view.transform = CGAffineTransformIdentity;
             toVC.view.transform = CGAffineTransformIdentity;
+            [self didChanageIndexFrom:fromIndex toIndex:toIndex isCancel:false];
         }];
+    }
+}
+
+- (void)willChanageIndexFrom:(NSInteger)fromIndex toIndex:(NSInteger)toIndex {
+    
+    if (self.incidentDelegate && [self.incidentDelegate respondsToSelector:@selector(segmentContainerViewController:willChangeIndexFrom:toIndex:)]) {
+        [self.incidentDelegate segmentContainerViewController:self willChangeIndexFrom:fromIndex toIndex:toIndex];
+    }
+}
+
+- (void)didChanageIndexFrom:(NSInteger)fromIndex toIndex:(NSInteger)toIndex isCancel:(BOOL)isCancel {
+    
+    if (self.incidentDelegate && [self.incidentDelegate respondsToSelector:@selector(segmentContainerViewController:didChangeIndexFrom:toIndex:isCanceled:)]) {
+        [self.incidentDelegate segmentContainerViewController:self didChangeIndexFrom:fromIndex toIndex:toIndex isCanceled:isCancel];
     }
 }
 
@@ -174,31 +193,38 @@ typedef NS_ENUM(NSInteger, YSDirectionType) {
             return;
         }
     }
+    // 注意此处方向,手指向左滑动即右侧视图显现
     CGFloat translate = -([pan translationInView:self.view].x);
-    CGFloat progress = translate / self.view.bounds.size.width;
-    CGFloat width = self.containerView.bounds.size.width;
+    CGSize containerSize = self.containerView.bounds.size;
+    CGFloat progress = translate / containerSize.width;
+    static NSInteger firstToIndex = NSNotFound;
     switch (pan.state) {
         case UIGestureRecognizerStateBegan:{
             self.isPanProcessing = true;
             [self handlePanBegan];
         }break;
         case UIGestureRecognizerStateChanged: {
-            CGRect bounds = self.originBounds;
-            CGFloat offsetW = width * progress;
+            CGRect bounds = [self getContainerViewOriginalBounds];
+            CGFloat offsetW = containerSize.width * progress;
             bounds.origin.x += offsetW;
             self.containerView.bounds = bounds;
             NSInteger toIndex = (progress > 0 ? self.selectIndex + 1 : self.selectIndex - 1);
             [self updateMenuItemAppearanceFromIndex:self.selectIndex toIndex:toIndex percent:progress];
+            if (firstToIndex != toIndex) {
+                [self willChanageIndexFrom:self.selectIndex toIndex:toIndex];
+                firstToIndex = toIndex;
+            }
         }break;
         case UIGestureRecognizerStateCancelled:
         case UIGestureRecognizerStateFailed:
         case UIGestureRecognizerStateEnded: {
             self.isPanProcessing = false;
-            if (progress > 0.4 || progress < -0.4) {
+            if (progress >= fabs(self.widthThreshold) || progress <= -fabs(self.widthThreshold)) {
                 [self panFinshByProgress:progress];
             } else {
                 [self panCancelByProgress:progress];
             }
+            firstToIndex = NSNotFound;
         }break;
         default:
             break;
@@ -225,6 +251,7 @@ typedef NS_ENUM(NSInteger, YSDirectionType) {
 
 - (void)panCancelByProgress:(CGFloat)progress {
     
+    YSDirectionType direction = progress > 0.0 ? YSDirectionType_Right : YSDirectionType_Left;
     NSTimeInterval duration = kDuration * (1 - fabs(progress)) * 2.0;
     NSInteger preIndex = self.selectIndex - 1;
     NSInteger nextIndex = self.selectIndex + 1;
@@ -237,14 +264,16 @@ typedef NS_ENUM(NSInteger, YSDirectionType) {
         nextVC = [self.viewControllers objectAtIndex:nextIndex];
     }
     
+    [self.menuView reverseChooseIndex];
     [UIView animateWithDuration:duration animations:^{
-        self.containerView.bounds = self.originBounds;
+        CGRect bounds = [self getContainerViewOriginalBounds];
+        self.containerView.bounds = bounds;
     } completion:^(BOOL finished) {
         [preVC.view removeFromSuperview];
         [nextVC.view removeFromSuperview];
         preVC.view.frame = self.containerView.bounds;
         nextVC.view.frame = self.containerView.bounds;
-        [self.menuView reverseChooseIndex];
+        [self didChanageIndexFrom:self.selectIndex toIndex:(direction == YSDirectionType_Right ? nextIndex : preIndex) isCancel:true];
     }];
 }
 
@@ -264,14 +293,17 @@ typedef NS_ENUM(NSInteger, YSDirectionType) {
     }
     
     UIViewController *currentVC = [self.viewControllers objectAtIndex:self.selectIndex];
+    CGSize containerSize = self.containerView.bounds.size;
+    CGRect bounds = [self getContainerViewOriginalBounds];
+    bounds.origin.x += (direction * containerSize.width);
+    NSInteger newSelectIndex = self.selectIndex + direction;
     
-    CGRect bounds = self.originBounds;
-    bounds.origin.x += (direction * bounds.size.width);
+    [self.menuView chooseIndex:newSelectIndex];
     [UIView animateWithDuration:duration animations:^{
         self.containerView.bounds = bounds;
     } completion:^(BOOL finished) {
         [currentVC.view removeFromSuperview];
-        self.containerView.bounds = self.originBounds;
+        self.containerView.bounds = [self getContainerViewOriginalBounds];
         if (direction == YSDirectionType_Left) {
             [nextVC.view removeFromSuperview];
             preVC.view.frame = self.containerView.bounds;
@@ -282,9 +314,14 @@ typedef NS_ENUM(NSInteger, YSDirectionType) {
         preVC.view.frame = self.containerView.bounds;
         nextVC.view.frame = self.containerView.bounds;
         self.needSelectAnimate = false;
-        self.selectIndex += (direction);
-        [self.menuView chooseIndex:self.selectIndex];
+        self.selectIndex = newSelectIndex;
+        [self didChanageIndexFrom:self.preSelectIndex toIndex:self.selectIndex isCancel:false];
     }];
+}
+
+- (CGRect)getContainerViewOriginalBounds {
+    
+    return CGRectMake(self.originXY.x, self.originXY.y, self.containerView.bounds.size.width, self.containerView.bounds.size.height);
 }
 
 #pragma mark - delegate

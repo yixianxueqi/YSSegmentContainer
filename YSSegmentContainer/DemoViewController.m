@@ -155,7 +155,10 @@
     
     YSMenuItemSliderView *menuView = [[YSMenuItemSliderView alloc] initWithFrame:CGRectMake(0.0, 0.0, [UIScreen mainScreen].bounds.size.width, 44.0)];
     menuView.itemWrapperWidthSpace = 40.0;
-    menuView.sliderFitItemWidth = false;
+//    menuView.sliderFitItemWidth = false;
+//    menuView.sliderExtWidth = -40.0;
+    menuView.sliderUseFiexedWidth = true;
+    menuView.sliderFixedWidth = 40.0;
     menuView.isEqualItem = true;
     menuView.selectFontScale = 1.1;
     self.segmentContainerVC.menuView = menuView;

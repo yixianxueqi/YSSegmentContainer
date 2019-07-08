@@ -16,6 +16,7 @@
 @property (nonatomic, strong) UIScrollView *itemsView;
 @property (nonatomic, strong) UIView *slider;
 @property (nonatomic, weak) UIView *separateLine;
+@property (nonatomic, assign) CGFloat percent;
 
 @end
 
@@ -41,6 +42,9 @@
         _sliderHeight = 2.0;
         _sliderOffsetTextBottom = 5.0;
         _sliderFitItemWidth = true;
+        _sliderExtWidth = 0.0;
+        _sliderUseFiexedWidth = false;
+        _sliderFixedWidth = 30.0;
         _separateLineColor = [UIColor colorWithWhite:0.9 alpha:1.0];
         _separateLineHeight = 1.0;
         
@@ -96,6 +100,7 @@
         fromView.textColor = self.selectColor;
         toView.textColor = self.normalColor;
     }
+    self.percent = progress;
     if (progress >= 1.0) {
         self.selectIndex = toIndex;
     }
@@ -199,7 +204,8 @@
     
     UILabel *fromView = [self itemViewOfItemsViewByIndex:fromIndex];
     UILabel *toView = [self itemViewOfItemsViewByIndex:toIndex];
-    [UIView animateWithDuration:0.25 animations:^{
+    NSTimeInterval duration = 0.25 * (1 - self.percent);
+    [UIView animateWithDuration:duration animations:^{
         CGRect itemFitFrame = [self getFitItemFrame:toView];
         self.slider.frame = CGRectMake(itemFitFrame.origin.x, self.slider.frame.origin.y, itemFitFrame.size.width, self.sliderHeight);
         fromView.transform = CGAffineTransformIdentity;
@@ -207,7 +213,7 @@
         toView.transform = CGAffineTransformMakeScale(self.selectFontScale, self.selectFontScale);
         toView.textColor = self.selectColor;
     } completion:^(BOOL finished) {
-        
+        self.percent = 0.0;
     }];
     [self adjustItemInCenter];
 }
@@ -258,17 +264,22 @@
         frame.origin.x = originX;
         frame.size.width = width;
     }
-    if (self.sliderFitItemWidth) {
-        return frame;
+    if (self.sliderUseFiexedWidth) {
+        CGFloat offsetW = frame.size.width - self.sliderFixedWidth;
+        return CGRectMake(frame.origin.x + offsetW * 0.5, frame.origin.y, self.sliderFixedWidth, frame.size.height);
     } else {
-        NSInteger index = [self itemIndexOfItemsView:itemView];
-        if (index == NSNotFound) {
-            return CGRectZero;
+        if (self.sliderFitItemWidth) {
+            return frame;
+        } else {
+            NSInteger index = [self itemIndexOfItemsView:itemView];
+            if (index == NSNotFound) {
+                return CGRectZero;
+            }
+            CGSize textSize = [self.itemsSizeList[index] CGSizeValue];
+            CGSize fitSize = CGSizeMake(textSize.width + self.itemWrapperWidthSpace + self.sliderExtWidth , self.itemSizeMaxHeight + self.itemWrapperHeightSpace);
+            CGFloat offsetW = frame.size.width - fitSize.width;
+            return CGRectMake(frame.origin.x + offsetW * 0.5, frame.origin.y, fitSize.width, fitSize.height);
         }
-        CGSize textSize = [self.itemsSizeList[index] CGSizeValue];
-        CGSize fitSize = CGSizeMake(textSize.width + self.itemWrapperWidthSpace , self.itemSizeMaxHeight + self.itemWrapperHeightSpace);
-        CGFloat offsetW = frame.size.width - fitSize.width;
-        return CGRectMake(frame.origin.x + offsetW * 0.5, frame.origin.y, fitSize.width, fitSize.height);
     }
 }
 

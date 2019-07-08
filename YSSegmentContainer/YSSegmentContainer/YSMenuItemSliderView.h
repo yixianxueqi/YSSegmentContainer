@@ -42,6 +42,12 @@
 @property (nonatomic, assign) CGFloat sliderCornerRadius;
 // default 5.0
 @property (nonatomic, assign) CGFloat sliderOffsetTextBottom;
+// adjust slider width by additional width,  default 0.0
+@property (nonatomic, assign) CGFloat sliderExtWidth;
+// whether fixed width, default false
+@property (nonatomic, assign) BOOL sliderUseFiexedWidth;
+// default 30.0,
+@property (nonatomic, assign) CGFloat sliderFixedWidth;
 /*
  whether slider view fit item width, default true.
  true: fit item Width, false: fit item's text width(textWidth+itemWrapperWidthSpace)

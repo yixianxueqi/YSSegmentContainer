@@ -20,6 +20,8 @@
 
 @property (nonatomic, weak) UIView *separateLine;
 
+@property (nonatomic, assign) CGFloat percent;
+
 @end
 
 @implementation YSMenuItemWrapperView
@@ -82,6 +84,7 @@
     CGFloat offswtWidth = (toRect.size.width - fromRect.size.width) * progress;
     
     self.maskView.frame = CGRectMake(fromRect.origin.x + offsetX, toRect.origin.y, fromRect.size.width + offswtWidth, toRect.size.height);
+    self.percent = progress;
     
     if (progress >= 1.0) {
         self.selectIndex = toIndex;
@@ -196,10 +199,12 @@
     if (fromIndex < 0 || fromIndex >= self.items.count) {
         fromIndex = 0;
     }
-    
-    [UIView animateWithDuration:0.25 animations:^{
+    NSTimeInterval duration = 0.25 * (1 - self.percent);
+    [UIView animateWithDuration:duration animations:^{
         UILabel *toView = [self.selectItemsView.subviews objectAtIndex:toIndex];
         self.maskView.frame = [self getFitItemFrame:toView];
+    } completion:^(BOOL finished) {
+        self.percent = 0.0;
     }];
     [self adjustItemInCenter];
 }
