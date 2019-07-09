@@ -77,7 +77,7 @@ Then, search again.
 
 After, add it to your Podfile, 
 ```
-pod 'YSSegmentContainer', '~>1.0.1'
+pod 'YSSegmentContainer', '~>1.1.1'
 ```
 
 Finall, run commend
