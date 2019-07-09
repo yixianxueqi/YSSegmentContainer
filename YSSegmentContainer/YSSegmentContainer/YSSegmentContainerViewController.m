@@ -197,24 +197,47 @@ typedef NS_ENUM(NSInteger, YSDirectionType) {
     CGFloat translate = -([pan translationInView:self.view].x);
     CGSize containerSize = self.containerView.bounds.size;
     CGFloat progress = translate / containerSize.width;
+    
+    NSInteger toIndex = (progress > 0 ? self.selectIndex + 1 : self.selectIndex - 1);
+    if (toIndex < 0 || toIndex >= self.viewControllers.count) {
+        UIViewController *currentVC = [self.viewControllers objectAtIndex:self.selectIndex];
+        for (UIView *subView in self.containerView.subviews) {
+            if (![subView isEqual:currentVC.view]) {
+                subView.frame = self.containerView.bounds;
+                [subView removeFromSuperview];
+            }
+        }
+        self.isPanProcessing = false;
+        return;
+    }
     static NSInteger firstToIndex = NSNotFound;
+    
+    self.isPanProcessing = true;
+    if (self.containerView.subviews.count <= 1) {
+        [self handlePanBegan];
+    }
+    
     switch (pan.state) {
         case UIGestureRecognizerStateBegan:{
-            self.isPanProcessing = true;
-            [self handlePanBegan];
+            /*
+             当子视图存在类似于tableview时,手势初始识别可能在tableview上而不在此，导致此方法不一定进入
+             因此下列方法放在外部
+             self.isPanProcessing = true;
+             [self handlePanBegan];
+             */
         }break;
         case UIGestureRecognizerStateChanged: {
             CGRect bounds = [self getContainerViewOriginalBounds];
             CGFloat offsetW = containerSize.width * progress;
             bounds.origin.x += offsetW;
             self.containerView.bounds = bounds;
-            NSInteger toIndex = (progress > 0 ? self.selectIndex + 1 : self.selectIndex - 1);
             [self updateMenuItemAppearanceFromIndex:self.selectIndex toIndex:toIndex percent:progress];
             if (firstToIndex != toIndex) {
                 [self willChanageIndexFrom:self.selectIndex toIndex:toIndex];
                 firstToIndex = toIndex;
             }
         }break;
+        case UIGestureRecognizerStatePossible: NSLog(@"Possible"); break;
         case UIGestureRecognizerStateCancelled:
         case UIGestureRecognizerStateFailed:
         case UIGestureRecognizerStateEnded: {

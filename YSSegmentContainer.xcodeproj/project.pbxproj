@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		FB288A9D22D4233400273E35 /* CrashLogRecord.m in Sources */ = {isa = PBXBuildFile; fileRef = FB288A9C22D4233400273E35 /* CrashLogRecord.m */; };
 		FBE5B87922C4702D00BD348A /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = FBE5B87822C4702D00BD348A /* AppDelegate.m */; };
 		FBE5B87C22C4702D00BD348A /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FBE5B87B22C4702D00BD348A /* ViewController.m */; };
 		FBE5B87F22C4702D00BD348A /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = FBE5B87D22C4702D00BD348A /* Main.storyboard */; };
@@ -23,6 +24,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		FB288A9B22D4233400273E35 /* CrashLogRecord.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CrashLogRecord.h; sourceTree = "<group>"; };
+		FB288A9C22D4233400273E35 /* CrashLogRecord.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CrashLogRecord.m; sourceTree = "<group>"; };
 		FBE5B87422C4702D00BD348A /* YSSegmentContainer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = YSSegmentContainer.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		FBE5B87722C4702D00BD348A /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		FBE5B87822C4702D00BD348A /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -90,6 +93,8 @@
 				FBE5B8B722C5DE0900BD348A /* ListViewController.m */,
 				FBE5B8B322C5AE4500BD348A /* TempViewController.h */,
 				FBE5B8B422C5AE4500BD348A /* TempViewController.m */,
+				FB288A9B22D4233400273E35 /* CrashLogRecord.h */,
+				FB288A9C22D4233400273E35 /* CrashLogRecord.m */,
 				FBE5B87D22C4702D00BD348A /* Main.storyboard */,
 				FBE5B88022C4703100BD348A /* Assets.xcassets */,
 				FBE5B88222C4703100BD348A /* LaunchScreen.storyboard */,
@@ -186,6 +191,7 @@
 			files = (
 				FBE5B89A22C4A4A200BD348A /* YSMenuItemWrapperView.m in Sources */,
 				FBE5B87C22C4702D00BD348A /* ViewController.m in Sources */,
+				FB288A9D22D4233400273E35 /* CrashLogRecord.m in Sources */,
 				FBE5B8B822C5DE0900BD348A /* ListViewController.m in Sources */,
 				FBE5B88722C4703100BD348A /* main.m in Sources */,
 				FBE5B89722C4A14000BD348A /* DemoViewController.m in Sources */,
