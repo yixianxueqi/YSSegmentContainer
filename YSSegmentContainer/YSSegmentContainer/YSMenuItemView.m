@@ -18,6 +18,11 @@
     
 }
 
+- (NSInteger)currentChooseIndex {
+    
+    return 0;
+}
+
 - (void)reverseChooseIndex {
     
 }
