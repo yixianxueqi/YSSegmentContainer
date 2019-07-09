@@ -95,6 +95,7 @@ typedef NS_ENUM(NSInteger, YSDirectionType) {
     __weak typeof(self) weakSelf = self;
     self.menuView.selectHandler = ^(YSMenuItemView *menuView, NSInteger selectIndex) {
         __strong typeof(self) self = weakSelf;
+        self.needSelectAnimate = true;
         self.selectIndex = selectIndex;
     };
     
@@ -243,6 +244,7 @@ typedef NS_ENUM(NSInteger, YSDirectionType) {
         targetIndex += (offsetW > thresholdWidth ? 1 : 0);
     } else {
         // left
+        offsetW = size.width - offsetW;
         targetIndex += (offsetW > thresholdWidth ? 0 : 1);
     }
     
