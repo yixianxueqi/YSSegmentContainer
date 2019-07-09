@@ -96,6 +96,11 @@
     [self setFromIndex:self.selectIndex toIndex:self.selectIndex];
 }
 
+- (NSInteger)currentChooseIndex {
+    
+    return self.selectIndex;
+}
+
 #pragma mark - incident
 - (void)tapItem:(UITapGestureRecognizer *)tap {
     
@@ -275,6 +280,7 @@
     if (selectIndex < 0 || selectIndex > self.items.count || self.selectIndex == selectIndex)  {
         return;
     }
+    NSLog(@"menu select index: %ld", selectIndex);
     self.preSelectIndex = _selectIndex;
     _selectIndex = selectIndex;
     [self setFromIndex:self.preSelectIndex toIndex:self.selectIndex];

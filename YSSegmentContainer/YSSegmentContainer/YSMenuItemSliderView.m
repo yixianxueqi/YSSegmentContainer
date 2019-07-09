@@ -110,6 +110,11 @@
     [self setFromIndex:self.selectIndex toIndex:self.selectIndex];
 }
 
+- (NSInteger)currentChooseIndex {
+    
+    return self.selectIndex;
+}
+
 #pragma mark - incident
 - (void)tapItem:(UITapGestureRecognizer *)tap {
     

@@ -65,6 +65,7 @@
      */
     if ([self.type isEqualToString:@"wrapper"]) {
         [self customWrapper];
+        self.segmentContainerVC.widthThreshold = 0.3;
 //        self.segmentContainerVC.isAllowPanInteractive = false;
     } else if ([self.type isEqualToString:@"equal wrapper"]) {
         [self customEqualWrapper];
