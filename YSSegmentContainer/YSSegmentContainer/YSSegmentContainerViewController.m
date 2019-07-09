@@ -36,7 +36,7 @@ typedef NS_ENUM(NSInteger, YSDirectionType) {
         _selectIndex = NSNotFound;
         _preSelectIndex = NSNotFound;
         _isAllowPanInteractive = true;
-        _widthThreshold = 0.5;
+        _widthThreshold = 0.3;
         _needSelectAnimate = true;
     }
     return self;
@@ -181,7 +181,11 @@ typedef NS_ENUM(NSInteger, YSDirectionType) {
         }
         [self didChanageIndexFrom:self.preSelectIndex toIndex:self.selectIndex isCancel:false];
     }
-    
+    static NSInteger lastToIndex;
+    if (lastToIndex != toIndex) {
+        [self willChanageIndexFrom:self.selectIndex toIndex:toIndex];
+        lastToIndex = toIndex;
+    }
     [self updateMenuItemAppearanceFromIndex:self.selectIndex toIndex:toIndex percent:percent];
 }
 
@@ -234,7 +238,7 @@ typedef NS_ENUM(NSInteger, YSDirectionType) {
     CGFloat thresholdWidth = self.widthThreshold * size.width;
     NSInteger targetIndex = ((NSInteger)offsetX)/((NSInteger)size.width);
     NSInteger offsetW = offsetX - targetIndex * size.width;
-    if (offsetX > currentOffset) {
+    if (offsetX >= currentOffset) {
          // right
         targetIndex += (offsetW > thresholdWidth ? 1 : 0);
     } else {
@@ -245,11 +249,14 @@ typedef NS_ENUM(NSInteger, YSDirectionType) {
     self.needSelectAnimate = false;
     self.selectIndex = targetIndex;
     *targetContentOffset = CGPointMake(self.selectIndex * size.width, 0);
+    BOOL isCancel = false;
     if (self.selectIndex == [self.menuView currentChooseIndex]) {
         [self.menuView reverseChooseIndex];
+        isCancel = true;
     } else {
         [self.menuView chooseIndex:self.selectIndex];
     }
+    [self didChanageIndexFrom:self.preSelectIndex toIndex:self.selectIndex isCancel:isCancel];
     self.isPanProcessing = false;
 }
 
@@ -259,7 +266,6 @@ typedef NS_ENUM(NSInteger, YSDirectionType) {
     if (_selectIndex == selectIndex) {
         return;
     }
-    NSLog(@"container select index: %d", selectIndex);
     self.preSelectIndex = _selectIndex;
     _selectIndex = selectIndex;
     if (self.needSelectAnimate) {

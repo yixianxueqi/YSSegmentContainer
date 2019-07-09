@@ -37,7 +37,7 @@
 @property (nonatomic, assign) BOOL isAllowPanInteractive;
 
 @property (nonatomic, weak) id<YSSegmentContainerViewControllerIncidentDelegate> incidentDelegate;
-// pan translate width in view, >= widthThreshold or <= -widthThreshold is finshed; other id canceled, default 0.5
+// pan translate width in view, >= widthThreshold or <= -widthThreshold is finshed; other id canceled, default 0.3
 @property (nonatomic, assign) CGFloat widthThreshold;
 /*
  The top tabView.
